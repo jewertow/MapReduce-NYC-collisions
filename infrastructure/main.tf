@@ -5,6 +5,18 @@ resource "google_storage_bucket" "google_storage_bucket_primary" {
   provider      = google
 }
 
+resource "google_storage_bucket_object" "google_storage_bucket_object_mapreduce_input_1" {
+  name   = "mapreduce/input/datasource1.txt"
+  bucket = google_storage_bucket.google_storage_bucket_primary.name
+  source = "${var.mapreduce_input_location}/ds1.txt"
+}
+
+resource "google_storage_bucket_object" "google_storage_bucket_object_mapreduce_input_2" {
+  name   = "mapreduce/input/datasource2.txt"
+  bucket = google_storage_bucket.google_storage_bucket_primary.name
+  source = "${var.mapreduce_input_location}/ds2.txt"
+}
+
 resource "google_dataproc_cluster" "google_dataproc_cluster_mapreduce_cluster" {
   name     = var.dataproc_mapreduce_cluster_name
   region   = var.region
