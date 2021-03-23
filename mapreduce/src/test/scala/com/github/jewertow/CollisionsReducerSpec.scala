@@ -1,6 +1,6 @@
 package com.github.jewertow
 
-import com.github.jewertow.Job.CollisionsReducer
+import com.github.jewertow.CollisionsJob.CollisionsReducer
 import org.apache.hadoop.io.{IntWritable, Text}
 import org.mockito.Mockito.{verify, verifyNoMoreInteractions}
 import org.scalatest.FlatSpec
