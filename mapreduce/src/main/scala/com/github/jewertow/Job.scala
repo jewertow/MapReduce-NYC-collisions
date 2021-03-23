@@ -1,15 +1,11 @@
 package com.github.jewertow
 
-import org.apache.hadoop.conf.Configured
-import org.apache.hadoop.io.{DoubleWritable, IntWritable, LongWritable, MapWritable, Text}
-import org.apache.hadoop.util.Tool
-import org.apache.hadoop.util.ToolRunner
-import org.apache.hadoop.mapreduce.Job
+import java.lang
+
+import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
 import org.apache.hadoop.mapreduce.Mapper
 import org.apache.hadoop.mapreduce.Reducer
-import org.apache.hadoop.fs.Path
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
+import scala.collection.JavaConverters._
 
 
 object Job {
@@ -82,6 +78,13 @@ object Job {
           }
         }
       }
+    }
+  }
+
+  class CollisionsReducer extends Reducer[Text, IntWritable, Text, IntWritable] {
+    override def reduce(key: Text, values: lang.Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
+      val sum = values.asScala.map(_.get()).sum
+      context.write(key, new IntWritable(sum))
     }
   }
 }
