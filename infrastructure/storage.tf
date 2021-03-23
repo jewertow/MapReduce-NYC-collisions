@@ -6,7 +6,7 @@ resource "google_storage_bucket" "primary" {
 }
 
 resource "google_storage_bucket_object" "collisions_mapreduce_job_jar" {
-  name = "mapreduce/jar/collisions-mapreduce-job.jar"
+  name   = "mapreduce/jar/collisions-mapreduce-job.jar"
   bucket = google_storage_bucket.primary.name
   source = "${var.project_location}/${var.mapreduce_job_jar_location}"
 }
