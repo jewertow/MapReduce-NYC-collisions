@@ -1,10 +1,3 @@
-resource "google_storage_bucket" "google_storage_bucket_primary" {
-  name          = "${var.gcp_project_id}-storage"
-  location      = "EUR4" # dual-region
-  force_destroy = "true"
-  provider      = google
-}
-
 resource "google_dataproc_cluster" "google_dataproc_cluster_mapreduce_cluster" {
   name     = var.dataproc_mapreduce_cluster_name
   region   = var.region

@@ -14,6 +14,10 @@ variable "zone" {
   default = "a"
 }
 
+variable "mapreduce_input_location" {
+  description = "env variable that stores path of the project"
+}
+
 variable "dataproc_mapreduce_cluster_name" {
   default = "mapreduce-cluster"
 }
