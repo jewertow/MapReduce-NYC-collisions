@@ -18,6 +18,14 @@ variable "dataproc_mapreduce_cluster_name" {
   default = "mapreduce-cluster"
 }
 
+variable "project_location" {
+  description = "env variable that stores path of the project"
+}
+
+variable "mapreduce_job_jar_location" {
+  default = "mapreduce/target/scala-2.12/collisions-mapreduce-job.jar"
+}
+
 variable "mapreduce_input_location" {
   description = "env variable that stores path of the project"
 }
