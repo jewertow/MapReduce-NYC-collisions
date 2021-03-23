@@ -5,7 +5,7 @@ resource "google_dataproc_cluster" "google_dataproc_cluster_mapreduce_cluster" {
   provider = google-beta
 
   cluster_config {
-    staging_bucket = google_storage_bucket.google_storage_bucket_primary.name
+    staging_bucket = google_storage_bucket.primary.name
 
     gce_cluster_config {
       zone = "${var.region}-${var.zone}"
