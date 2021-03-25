@@ -1,4 +1,4 @@
-resource "google_dataproc_cluster" "google_dataproc_cluster_mapreduce_cluster" {
+resource "google_dataproc_cluster" "mapreduce_cluster" {
   name     = var.dataproc_mapreduce_cluster_name
   region   = var.region
   project  = var.gcp_project_id
@@ -34,4 +34,30 @@ resource "google_dataproc_cluster" "google_dataproc_cluster_mapreduce_cluster" {
       optional_components = ["ZEPPELIN"]
     }
   }
+}
+
+resource "google_dataproc_job" "hadoop_collisions_mapreduce_job" {
+  region = google_dataproc_cluster.mapreduce_cluster.region
+
+  placement {
+    cluster_name = google_dataproc_cluster.mapreduce_cluster.name
+  }
+
+  hadoop_config {
+    main_jar_file_uri = "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.collisions_mapreduce_job_jar.name}"
+    args = [
+      "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.mapreduce_test_input_1.name}",
+      "gs://${google_storage_bucket.primary.name}/mapreduce/output"
+    ]
+  }
+
+  depends_on = [
+    google_dataproc_cluster.mapreduce_cluster,
+    google_storage_bucket_object.collisions_mapreduce_job_jar,
+    google_storage_bucket_object.mapreduce_test_input_1
+  ]
+}
+
+output "hadoop_collisions_mapreduce_job_status" {
+  value = google_dataproc_job.hadoop_collisions_mapreduce_job.status[0].state
 }
