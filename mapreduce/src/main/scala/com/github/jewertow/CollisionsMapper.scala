@@ -16,8 +16,8 @@ class CollisionsMapper extends Mapper[LongWritable, Text, Text, IntWritable] {
 
     val columns = value.toString.split(",")
     val date = columns(0)
-    val zipCode = columns(1)
-    val street = columns(5)
+    val zipCode = columns(2)
+    val street = columns(6)
 
     val year = date.split("/")(2).toInt
     if (year <= 2012 || zipCode.isEmpty || zipCode.trim.isEmpty) {

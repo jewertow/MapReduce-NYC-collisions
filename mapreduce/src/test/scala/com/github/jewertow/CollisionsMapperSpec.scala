@@ -16,7 +16,7 @@ class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
     // when
     mapper.map(
       key = new LongWritable(1),
-      value = new Text("08/03/2013,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
+      value = new Text("08/03/2013,18:00,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
       context
     )
 
@@ -35,7 +35,7 @@ class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
     // when
     mapper.map(
       key = new LongWritable(1),
-      value = new Text("08/03/2013,11223,,,,37 AVENUE,,,,4,0,2,0,1,0,1,0"),
+      value = new Text("08/03/2013,18:00,11223,,,,37 AVENUE,,,,4,0,2,0,1,0,1,0"),
       context
     )
 
@@ -62,7 +62,7 @@ class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
     // when
     mapper.map(
       key = new LongWritable(1),
-      value = new Text("08/03/2013,11223,,,,37 AVENUE,,,,4,3,2,1,1,1,1,1"),
+      value = new Text("08/03/2013,18:00,11223,,,,37 AVENUE,,,,4,3,2,1,1,1,1,1"),
       context
     )
 
@@ -101,7 +101,7 @@ class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
     // when
     mapper.map(
       key = new LongWritable(1),
-      value = new Text("08/03/2012,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
+      value = new Text("08/03/2012,18:00,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
       context
     )
 
@@ -118,7 +118,7 @@ class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
     invalidZipCodes.foreach { zipCode =>
       mapper.map(
         key = new LongWritable(1),
-        value = new Text(s"08/03/2012,$zipCode,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
+        value = new Text(s"08/03/2012,18:00,$zipCode,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
         context
       )
     }

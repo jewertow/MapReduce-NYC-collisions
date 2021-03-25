@@ -20,18 +20,18 @@ sealed abstract class CollisionParticipant {
 
 case object Pedestrians extends CollisionParticipant {
   override val typeName: String = "pedestrians"
-  override val injuredColumn: Int = 11
-  override val killedColumn: Int = 12
+  override val injuredColumn: Int = 12
+  override val killedColumn: Int = 13
 }
 
 case object Cyclist extends CollisionParticipant {
   override val typeName: String = "cyclist"
-  override val injuredColumn: Int = 13
-  override val killedColumn: Int = 14
+  override val injuredColumn: Int = 14
+  override val killedColumn: Int = 15
 }
 
 case object Motorist extends CollisionParticipant {
   override val typeName: String = "motorist"
-  override val injuredColumn: Int = 15
-  override val killedColumn: Int = 16
+  override val injuredColumn: Int = 16
+  override val killedColumn: Int = 17
 }
