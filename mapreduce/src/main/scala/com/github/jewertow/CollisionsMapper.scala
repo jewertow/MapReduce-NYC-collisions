@@ -2,13 +2,14 @@ package com.github.jewertow
 
 import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
 import org.apache.hadoop.mapreduce.Mapper
+import com.github.jewertow.HadoopExt._
 
 class CollisionsMapper extends Mapper[LongWritable, Text, Text, IntWritable] {
 
   private final val InjuryTypes = List(Injured, Killed)
   private final val CollisionParticipants = List(Pedestrians, Cyclist, Motorist)
 
-  override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, Text, IntWritable]#Context): Unit = {
+  override def map(key: LongWritable, value: Text, context: MapperContext): Unit = {
     if (key.get() == 0) {
       return
     }
@@ -32,8 +33,8 @@ class CollisionsMapper extends Mapper[LongWritable, Text, Text, IntWritable] {
         val participantsNumber = columns(column).toInt
         if (participantsNumber > 0) {
           context.write(
-            new Text(s"$street,$zipCode,${participant.typeName},${injuryType.typeName}"),
-            new IntWritable(participantsNumber)
+            s"$street,$zipCode,${participant.typeName},${injuryType.typeName}".text,
+            participantsNumber.writable
           )
         }
       }
