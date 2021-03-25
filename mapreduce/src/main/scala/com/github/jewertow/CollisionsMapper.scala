@@ -4,6 +4,8 @@ import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
 import org.apache.hadoop.mapreduce.Mapper
 import com.github.jewertow.HadoopExt._
 
+import scala.util.Try
+
 class CollisionsMapper extends Mapper[LongWritable, Text, Text, IntWritable] {
 
   private final val InjuryTypes = List(Injured, Killed)
@@ -19,7 +21,9 @@ class CollisionsMapper extends Mapper[LongWritable, Text, Text, IntWritable] {
     val zipCode = columns(2)
     val street = columns(6)
 
-    val year = date.split("/")(2).toInt
+    val year = Try {
+      date.split("/")(2).toInt
+    }.getOrElse(0)
     if (year <= 2012 || zipCode.isEmpty || zipCode.trim.isEmpty) {
       return
     }
@@ -30,7 +34,9 @@ class CollisionsMapper extends Mapper[LongWritable, Text, Text, IntWritable] {
           case Injured => participant.injuredColumn
           case Killed => participant.killedColumn
         }
-        val participantsNumber = columns(column).toInt
+        val participantsNumber = Try {
+          columns(column).toInt
+        }.getOrElse(0)
         if (participantsNumber > 0) {
           context.write(
             s"$street,$zipCode,${participant.typeName},${injuryType.typeName}".text,
