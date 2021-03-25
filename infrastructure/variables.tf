@@ -30,6 +30,10 @@ variable "mapreduce_input_location" {
   description = "env variable that stores path of the project"
 }
 
-variable "mapreduce_input_ds1" {
-  default = "NYPD_Motor_Vehicle_Collisions"
+variable "collisions_dataset_file" {
+  default = "NYPD_Motor_Vehicle_Collisions.csv"
+}
+
+variable "collisions_test_dataset_file" {
+  default = "NYPD_Motor_Vehicle_Collisions_test.csv"
 }

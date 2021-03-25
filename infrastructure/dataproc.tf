@@ -46,7 +46,7 @@ resource "google_dataproc_job" "hadoop_collisions_mapreduce_job" {
   hadoop_config {
     main_jar_file_uri = "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.collisions_mapreduce_job_jar.name}"
     args = [
-      "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.mapreduce_test_input_1.name}",
+      "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.collisions_dataset.name}",
       "gs://${google_storage_bucket.primary.name}/mapreduce/output/${formatdate("YYYY-MM-DD-hh-mm-ss", timestamp())}"
     ]
   }
@@ -54,7 +54,7 @@ resource "google_dataproc_job" "hadoop_collisions_mapreduce_job" {
   depends_on = [
     google_dataproc_cluster.mapreduce_cluster,
     google_storage_bucket_object.collisions_mapreduce_job_jar,
-    google_storage_bucket_object.mapreduce_test_input_1
+    google_storage_bucket_object.collisions_dataset
   ]
 }
 
