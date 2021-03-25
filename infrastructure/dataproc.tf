@@ -47,7 +47,7 @@ resource "google_dataproc_job" "hadoop_collisions_mapreduce_job" {
     main_jar_file_uri = "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.collisions_mapreduce_job_jar.name}"
     args = [
       "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.mapreduce_test_input_1.name}",
-      "gs://${google_storage_bucket.primary.name}/mapreduce/output"
+      "gs://${google_storage_bucket.primary.name}/mapreduce/output/${formatdate("YYYY-MM-DD-hh-mm-ss", timestamp())}"
     ]
   }
 
