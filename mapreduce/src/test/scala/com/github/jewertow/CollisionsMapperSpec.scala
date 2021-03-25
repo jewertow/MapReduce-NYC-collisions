@@ -1,6 +1,5 @@
 package com.github.jewertow
 
-import com.github.jewertow.CollisionsJob.CollisionsMapper
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.FlatSpec
 import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
