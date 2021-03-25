@@ -6,15 +6,17 @@ import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
 import org.mockito.Mockito._
 
 class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
+
+  private val mapper = new CollisionsMapper
+
   it should "return single result record when collision has only one type of participants" in {
     // given
-    val mapper = new CollisionsMapper
     val context = mock[mapper.Context]
 
     // when
     mapper.map(
       key = new LongWritable(1),
-      value = new Text("date-todo,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
+      value = new Text("08/03/2013,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
       context
     )
 
@@ -28,13 +30,12 @@ class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
 
   it should "return as many result records as distinct participant types participated in a collision" in {
     // given
-    val mapper = new CollisionsMapper
     val context = mock[mapper.Context]
 
     // when
     mapper.map(
       key = new LongWritable(1),
-      value = new Text("date-todo,11223,,,,37 AVENUE,,,,4,0,2,0,1,0,1,0"),
+      value = new Text("08/03/2013,11223,,,,37 AVENUE,,,,4,0,2,0,1,0,1,0"),
       context
     )
 
@@ -56,13 +57,12 @@ class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
 
   it should "return as many result records as distinct participant and injury types participated in a collision" in {
     // given
-    val mapper = new CollisionsMapper
     val context = mock[mapper.Context]
 
     // when
     mapper.map(
       key = new LongWritable(1),
-      value = new Text("date-todo,11223,,,,37 AVENUE,,,,4,3,2,1,1,1,1,1"),
+      value = new Text("08/03/2013,11223,,,,37 AVENUE,,,,4,3,2,1,1,1,1,1"),
       context
     )
 
@@ -91,6 +91,39 @@ class CollisionsMapperSpec extends FlatSpec with MockitoSugar {
       new Text("37 AVENUE,11223,motorist,killed"),
       new IntWritable(1)
     )
+    verifyNoMoreInteractions(context)
+  }
+
+  it should "ignore collisions that happened before 2013" in {
+    // given
+    val context = mock[mapper.Context]
+
+    // when
+    mapper.map(
+      key = new LongWritable(1),
+      value = new Text("08/03/2012,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
+      context
+    )
+
+    // then
+    verifyNoMoreInteractions(context)
+  }
+
+  it should "ignore collisions that have no zip code" in {
+    // given
+    val context = mock[mapper.Context]
+    val invalidZipCodes = List("", " ", "\t")
+
+    // when
+    invalidZipCodes.foreach { zipCode =>
+      mapper.map(
+        key = new LongWritable(1),
+        value = new Text(s"08/03/2012,$zipCode,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0"),
+        context
+      )
+    }
+
+    // then
     verifyNoMoreInteractions(context)
   }
 }
