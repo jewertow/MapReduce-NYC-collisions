@@ -22,6 +22,7 @@ object CollisionsJob extends Configured with Tool {
     FileInputFormat.addInputPath(job, new Path(args(0)))
     FileOutputFormat.setOutputPath(job, new Path(args(1)))
     job.setMapperClass(classOf[CollisionsMapper])
+    job.setCombinerClass(classOf[CollisionsReducer])
     job.setReducerClass(classOf[CollisionsReducer])
     job.setOutputKeyClass(classOf[Text])
     job.setOutputValueClass(classOf[IntWritable])
