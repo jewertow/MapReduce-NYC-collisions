@@ -1,6 +1,6 @@
 package com.github.jewertow
 
-import org.apache.hadoop.conf.Configured
+import org.apache.hadoop.conf.{Configuration, Configured}
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.{IntWritable, Text}
 import org.apache.hadoop.mapreduce.Job
@@ -17,7 +17,9 @@ object CollisionsJob extends Configured with Tool {
   }
 
   override def run(args: Array[_root_.java.lang.String]): Int = {
-    val job = Job.getInstance(getConf, "collisions")
+    val conf = new Configuration()
+    conf.set("mapreduce.output.textoutputformat.separator", ",")
+    val job = Job.getInstance(conf, "collisions")
     job.setJarByClass(this.getClass)
     FileInputFormat.addInputPath(job, new Path(args(0)))
     FileOutputFormat.setOutputPath(job, new Path(args(1)))
