@@ -82,6 +82,22 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     verifyNoMoreInteractions(context)
   }
 
+  it should "ignore collisions that have no street" in {
+    // given
+    val context = mock[mapper.Context]
+    val invalidStreets = List("", " ", "\t")
+
+    // when
+    val results = invalidStreets.map { street =>
+      mapper.map(lineNo, value = s"08/03/2013,18:00,11223,,,,$street,,,,2,0,2,0,0,0,0,0".text, context)
+    }.toSet
+
+    // then
+    // no exception was thrown
+    results shouldBe Set(())
+    verifyNoMoreInteractions(context)
+  }
+
   it should "ignore collisions in case of invalid date" in {
     // given
     val context = mock[mapper.Context]
