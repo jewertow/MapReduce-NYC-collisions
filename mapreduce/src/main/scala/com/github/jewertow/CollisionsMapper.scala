@@ -24,7 +24,7 @@ class CollisionsMapper extends Mapper[LongWritable, Text, Text, IntWritable] {
     val year = Try {
       date.split("/")(2).toInt
     }.getOrElse(0)
-    if (year <= 2012 || zipCode.isEmpty || zipCode.trim.isEmpty) {
+    if (year <= 2012 || zipCode.trim.isEmpty || street.trim.isEmpty) {
       return
     }
 
