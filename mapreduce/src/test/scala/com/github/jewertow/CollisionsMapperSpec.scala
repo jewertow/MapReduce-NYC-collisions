@@ -20,7 +20,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0".text, context)
 
     // then
-    verify(context).write("37 AVENUE,11223,pedestrians,injured".text, 2.writable)
+    verify(context).write("37 AVENUE,11223,pedestrian,injured".text, 2.writable)
     verifyNoMoreInteractions(context)
   }
 
@@ -32,7 +32,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,,4,0,2,0,1,0,1,0".text, context)
 
     // then
-    verify(context).write("37 AVENUE,11223,pedestrians,injured".text, 2.writable)
+    verify(context).write("37 AVENUE,11223,pedestrian,injured".text, 2.writable)
     verify(context).write("37 AVENUE,11223,cyclist,injured".text, 1.writable)
     verify(context).write("37 AVENUE,11223,motorist,injured".text, 1.writable)
     verifyNoMoreInteractions(context)
@@ -46,8 +46,8 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,,4,3,2,1,1,1,1,1".text, context)
 
     // then
-    verify(context).write("37 AVENUE,11223,pedestrians,injured".text, 2.writable)
-    verify(context).write("37 AVENUE,11223,pedestrians,killed".text, 1.writable)
+    verify(context).write("37 AVENUE,11223,pedestrian,injured".text, 2.writable)
+    verify(context).write("37 AVENUE,11223,pedestrian,killed".text, 1.writable)
     verify(context).write("37 AVENUE,11223,cyclist,injured".text, 1.writable)
     verify(context).write("37 AVENUE,11223,cyclist,killed".text, 1.writable)
     verify(context).write("37 AVENUE,11223,motorist,injured".text, 1.writable)

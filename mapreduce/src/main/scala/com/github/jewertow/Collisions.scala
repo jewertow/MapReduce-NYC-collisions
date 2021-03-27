@@ -19,7 +19,7 @@ sealed abstract class CollisionParticipant {
 }
 
 case object Pedestrians extends CollisionParticipant {
-  override val typeName: String = "pedestrians"
+  override val typeName: String = "pedestrian"
   override val injuredColumn: Int = 12
   override val killedColumn: Int = 13
 }
