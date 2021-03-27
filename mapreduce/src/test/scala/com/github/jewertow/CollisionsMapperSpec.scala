@@ -17,7 +17,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     val context = mock[mapper.Context]
 
     // when
-    mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0".text, context)
+    mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,2,0,2,0,0,0,0,0".text, context)
 
     // then
     verify(context).write("37 AVENUE,11223,pedestrian,injured".text, 2.writable)
@@ -29,7 +29,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     val context = mock[mapper.Context]
 
     // when
-    mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,,4,0,2,0,1,0,1,0".text, context)
+    mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,4,0,2,0,1,0,1,0".text, context)
 
     // then
     verify(context).write("37 AVENUE,11223,pedestrian,injured".text, 2.writable)
@@ -43,7 +43,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     val context = mock[mapper.Context]
 
     // when
-    mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,,4,3,2,1,1,1,1,1".text, context)
+    mapper.map(lineNo, value = "08/03/2013,18:00,11223,,,,37 AVENUE,,,4,3,2,1,1,1,1,1".text, context)
 
     // then
     verify(context).write("37 AVENUE,11223,pedestrian,injured".text, 2.writable)
@@ -60,7 +60,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     val context = mock[mapper.Context]
 
     // when
-    mapper.map(lineNo, value = "08/03/2012,18:00,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0".text, context)
+    mapper.map(lineNo, value = "08/03/2012,18:00,11223,,,,37 AVENUE,,,2,0,2,0,0,0,0,0".text, context)
 
     // then
     verifyNoMoreInteractions(context)
@@ -73,7 +73,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
 
     // when
     val results = invalidZipCodes.map { zipCode =>
-      mapper.map(lineNo, value = s"08/03/2012,18:00,$zipCode,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0".text, context)
+      mapper.map(lineNo, value = s"08/03/2012,18:00,$zipCode,,,,37 AVENUE,,,2,0,2,0,0,0,0,0".text, context)
     }.toSet
 
     // then
@@ -89,7 +89,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
 
     // when
     val results = invalidStreets.map { street =>
-      mapper.map(lineNo, value = s"08/03/2013,18:00,11223,,,,$street,,,,2,0,2,0,0,0,0,0".text, context)
+      mapper.map(lineNo, value = s"08/03/2013,18:00,11223,,,,$street,,,2,0,2,0,0,0,0,0".text, context)
     }.toSet
 
     // then
@@ -103,7 +103,7 @@ class CollisionsMapperSpec extends FlatSpec with Matchers with MockitoSugar {
     val context = mock[mapper.Context]
 
     // when
-    mapper.map(lineNo, value = s"DATE_EXPECTED,18:00,11223,,,,37 AVENUE,,,,2,0,2,0,0,0,0,0".text, context)
+    mapper.map(lineNo, value = s"DATE_EXPECTED,18:00,11223,,,,37 AVENUE,,,2,0,2,0,0,0,0,0".text, context)
 
     // then
     verifyNoMoreInteractions(context)

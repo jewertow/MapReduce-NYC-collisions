@@ -27,6 +27,31 @@ EOF
     location '${local.zips_boroughs_bucket}'
     tblproperties("skip.header.line.count"="1");
 EOF
+  hive_join_collisions_and_zip_boroughs = <<EOF
+    select c.street, c.participant, c.injury, sum(c.participants_number) as participants
+      from collisions c
+      join (
+        select distinct c.street, c.zip_code
+          from collisions c
+          join (
+            select c.street, sum(c.participants_number) as participants
+              from collisions c
+              join zips_boroughs z
+              on c.zip_code = z.zip_code
+              where z.boroughs = "MANHATTAN"
+              group by c.street
+              order by participants desc
+              limit 3
+          ) t
+          on c.street = t.street
+      ) t
+      on c.street = t.street and c.zip_code = t.zip_code
+      join zips_boroughs z
+      on c.zip_code = z.zip_code
+      where z.boroughs = "MANHATTAN"
+      group by c.street, c.participant, c.injury;
+EOF
+
 }
 
 resource "google_dataproc_cluster" "mapreduce_cluster" {
@@ -93,7 +118,7 @@ output "hadoop_collisions_mapreduce_job_status" {
   value = google_dataproc_job.hadoop_collisions_mapreduce_job.status[0].state
 }
 
-resource "google_dataproc_job" "hive_collisions_db" {
+resource "google_dataproc_job" "hive_job" {
   region = google_dataproc_cluster.mapreduce_cluster.region
 
   placement {
@@ -112,6 +137,7 @@ resource "google_dataproc_job" "hive_collisions_db" {
       local.hive_create_table_zips_boroughs,
       "select * from zips_boroughs limit 10;",
       "select count(*) from zips_boroughs;",
+      local.hive_join_collisions_and_zip_boroughs
     ]
   }
 
@@ -122,5 +148,5 @@ resource "google_dataproc_job" "hive_collisions_db" {
 }
 
 output "hive_collisions_db_job_status" {
-  value = google_dataproc_job.hive_collisions_db.status[0].state
+  value = google_dataproc_job.hive_job.status[0].state
 }
