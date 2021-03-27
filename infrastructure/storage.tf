@@ -24,7 +24,7 @@ resource "google_storage_bucket_object" "collisions_test_dataset" {
 }
 
 resource "google_storage_bucket_object" "zips_boroughs_dataset" {
-  name   = "mapreduce/input/zips-boroughs.csv"
+  name   = "mapreduce/hive/tables/zips-boroughs/zips-boroughs.csv"
   bucket = google_storage_bucket.primary.name
   source = "${var.project_location}/input/zips-boroughs/${var.zips_boroughs_dataset_file}"
 }

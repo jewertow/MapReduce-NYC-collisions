@@ -15,6 +15,18 @@ locals {
     stored as textfile
     location '${local.collisions_job_output_bucket}';
 EOF
+  zips_boroughs_bucket = "gs://${google_storage_bucket.primary.name}/mapreduce/hive/tables/zips-boroughs"
+  hive_create_table_zips_boroughs = <<EOF
+    create external table zips_boroughs(
+      zip_code int,
+      boroughs string
+    )
+    row format
+    delimited fields terminated by ","
+    stored as textfile
+    location '${local.zips_boroughs_bucket}'
+    tblproperties("skip.header.line.count"="1");
+EOF
 }
 
 resource "google_dataproc_cluster" "mapreduce_cluster" {
@@ -90,10 +102,16 @@ resource "google_dataproc_job" "hive_collisions_db" {
 
   hive_config {
     query_list = [
+      // collisions
       "drop table if exists collisions;",
       local.hive_create_table_collisions,
       "select * from collisions limit 10;",
       "select count(*) from collisions;",
+      // zips_boroughs
+      "drop table if exists zips_boroughs;",
+      local.hive_create_table_zips_boroughs,
+      "select * from zips_boroughs limit 10;",
+      "select count(*) from zips_boroughs;",
     ]
   }
 
