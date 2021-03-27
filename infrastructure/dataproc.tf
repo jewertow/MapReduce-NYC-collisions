@@ -1,5 +1,7 @@
 locals {
-  hive_drop_old_table          = "drop table if exists collisions"
+  collisions_job_jar_bucket    = "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.collisions_mapreduce_job_jar.name}"
+  collisions_job_input_bucket  = "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.collisions_dataset.name}"
+  collisions_job_output_bucket = "gs://${google_storage_bucket.primary.name}/mapreduce/output/${var.execution_date_time}"
   hive_create_table_collisions = <<EOF
     create external table collisions(
       street string,
@@ -11,7 +13,7 @@ locals {
     row format
     delimited fields terminated by ","
     stored as textfile
-    location 'gs://${google_storage_bucket.primary.name}/mapreduce/output/${var.execution_date_time}';
+    location '${local.collisions_job_output_bucket}';
 EOF
 }
 
@@ -61,10 +63,10 @@ resource "google_dataproc_job" "hadoop_collisions_mapreduce_job" {
   }
 
   hadoop_config {
-    main_jar_file_uri = "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.collisions_mapreduce_job_jar.name}"
+    main_jar_file_uri = local.collisions_job_jar_bucket
     args = [
-      "gs://${google_storage_bucket.primary.name}/${google_storage_bucket_object.collisions_dataset.name}",
-      "gs://${google_storage_bucket.primary.name}/mapreduce/output/${var.execution_date_time}"
+      local.collisions_job_input_bucket,
+      local.collisions_job_output_bucket
     ]
   }
 
@@ -88,7 +90,7 @@ resource "google_dataproc_job" "hive_collisions_db" {
 
   hive_config {
     query_list = [
-      local.hive_drop_old_table,
+      "drop table if exists collisions;",
       local.hive_create_table_collisions,
       "select * from collisions limit 10;",
       "select count(*) from collisions;",
@@ -99,4 +101,8 @@ resource "google_dataproc_job" "hive_collisions_db" {
     google_dataproc_cluster.mapreduce_cluster,
     google_dataproc_job.hadoop_collisions_mapreduce_job
   ]
+}
+
+output "hive_collisions_db_job_status" {
+  value = google_dataproc_job.hive_collisions_db.status[0].state
 }
