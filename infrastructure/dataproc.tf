@@ -28,28 +28,34 @@ EOF
     tblproperties("skip.header.line.count"="1");
 EOF
   hive_join_collisions_and_zip_boroughs = <<EOF
-    select c.street, c.participant, c.injury, sum(c.participants_number) as participants
-      from collisions c
-      join (
-        select distinct c.street, c.zip_code
+    select c.street, c.person_type, max(c.killed) as killed, max(c.injured) as injured
+      from (
+        select c.street, c.participant as person_type,
+          case when c.injury = 'killed' then sum(c.participants_number) else 0 end as killed,
+          case when c.injury = 'injured' then sum(c.participants_number) else 0 end as injured
           from collisions c
           join (
-            select c.street, sum(c.participants_number) as participants
+            select distinct c.street, c.zip_code
               from collisions c
-              join zips_boroughs z
-              on c.zip_code = z.zip_code
-              where z.boroughs = "MANHATTAN"
-              group by c.street
-              order by participants desc
-              limit 3
+              join (
+                select c.street, sum(c.participants_number) as participants
+                  from collisions c
+                  join zips_boroughs z
+                  on c.zip_code = z.zip_code
+                  where z.boroughs = "MANHATTAN"
+                  group by c.street
+                  order by participants desc
+                  limit 3
+              ) t
+              on c.street = t.street
           ) t
-          on c.street = t.street
-      ) t
-      on c.street = t.street and c.zip_code = t.zip_code
-      join zips_boroughs z
-      on c.zip_code = z.zip_code
-      where z.boroughs = "MANHATTAN"
-      group by c.street, c.participant, c.injury;
+          on c.street = t.street and c.zip_code = t.zip_code
+          join zips_boroughs z
+          on c.zip_code = z.zip_code
+          where z.boroughs = "MANHATTAN"
+          group by c.street, c.participant, c.injury
+      ) c
+    group by c.street, c.person_type;
 EOF
 
 }
