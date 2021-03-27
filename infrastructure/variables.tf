@@ -41,3 +41,7 @@ variable "collisions_dataset_file" {
 variable "collisions_test_dataset_file" {
   default = "NYPD_Motor_Vehicle_Collisions_test.csv"
 }
+
+variable "zips_boroughs_dataset_file" {
+  default = "zips-boroughs.csv"
+}

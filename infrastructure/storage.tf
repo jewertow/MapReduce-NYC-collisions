@@ -23,8 +23,8 @@ resource "google_storage_bucket_object" "collisions_test_dataset" {
   source = "${var.project_location}/input/collisions/${var.collisions_test_dataset_file}"
 }
 
-resource "google_storage_bucket_object" "mapreduce_test_input_2" {
-  name   = "mapreduce/input/datasource2.txt"
+resource "google_storage_bucket_object" "zips_boroughs_dataset" {
+  name   = "mapreduce/input/zips-boroughs.csv"
   bucket = google_storage_bucket.primary.name
-  source = "${var.project_location}/input/ds2.txt"
+  source = "${var.project_location}/input/zips-boroughs/${var.zips_boroughs_dataset_file}"
 }
