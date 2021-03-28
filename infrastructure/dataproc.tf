@@ -70,6 +70,57 @@ EOF
     stored as textfile
     location '${local.hive_job_output_bucket}';
 EOF
+  avro_table = <<EOF
+    CREATE external TABLE collisions_avro
+      ROW FORMAT
+      SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+      STORED AS
+      INPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+      OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+      location 'gs://put-big-data-2021-02-je-storage/mapreduce/output/2021-03-28-03-51-30'
+      TBLPROPERTIES ('avro.schema.literal'='{
+        "name": "Collisions",
+        "type": "record",
+        "fields": [
+          {"name":"street","type":"string"},
+          {"name":"zip_code","type":"string"},
+          {"name":"person_type","type":"string"},
+          {"name":"injury_type","type":"string"},
+          {"name":"participants_number","type":"int"}
+        ]
+      }');
+EOF
+  hive_join_collisions_and_zip_boroughs_avro = <<EOF
+      insert overwrite table avro_table
+      select c.street, c.person_type, max(c.killed) as killed, max(c.injured) as injured
+        from (
+          select c.street, c.participant as person_type,
+            case when c.injury = 'killed' then sum(c.participants_number) else 0 end as killed,
+            case when c.injury = 'injured' then sum(c.participants_number) else 0 end as injured
+            from collisions c
+            join (
+              select distinct c.street, c.zip_code
+                from collisions c
+                join (
+                  select c.street, sum(c.participants_number) as participants
+                    from collisions c
+                    join zips_boroughs z
+                    on c.zip_code = z.zip_code
+                    where z.boroughs = "MANHATTAN"
+                    group by c.street
+                    order by participants desc
+                    limit 3
+                ) t
+                on c.street = t.street
+            ) t
+            on c.street = t.street and c.zip_code = t.zip_code
+            join zips_boroughs z
+            on c.zip_code = z.zip_code
+            where z.boroughs = "MANHATTAN"
+            group by c.street, c.participant, c.injury
+        ) c
+      group by c.street, c.person_type;
+EOF
 }
 
 resource "google_dataproc_cluster" "mapreduce_cluster" {

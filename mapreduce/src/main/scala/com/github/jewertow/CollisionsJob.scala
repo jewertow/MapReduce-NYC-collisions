@@ -1,10 +1,12 @@
 package com.github.jewertow
 
+import org.apache.avro.generic.GenericRecord
+import org.apache.avro.mapreduce.{AvroJob, AvroKeyOutputFormat}
 import org.apache.hadoop.conf.{Configuration, Configured}
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.{IntWritable, Text}
 import org.apache.hadoop.mapreduce.Job
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
+import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat, TextInputFormat}
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.util.{Tool, ToolRunner}
 
@@ -24,10 +26,13 @@ object CollisionsJob extends Configured with Tool {
     FileInputFormat.addInputPath(job, new Path(args(0)))
     FileOutputFormat.setOutputPath(job, new Path(args(1)))
     job.setMapperClass(classOf[CollisionsMapper])
-    job.setCombinerClass(classOf[CollisionsReducer])
+    job.setCombinerClass(classOf[CollisionsCombiner])
     job.setReducerClass(classOf[CollisionsReducer])
-    job.setOutputKeyClass(classOf[Text])
-    job.setOutputValueClass(classOf[IntWritable])
+    AvroJob.setOutputKeySchema(job, CollisionsReducer.CollisionsSchema)
+    job.setMapOutputKeyClass(classOf[Text])
+    job.setMapOutputValueClass(classOf[IntWritable])
+    job.setInputFormatClass(classOf[TextInputFormat])
+    job.setOutputFormatClass(classOf[AvroKeyOutputFormat[GenericRecord]])
     if (job.waitForCompletion(true)) 0 else 1
   }
 }
