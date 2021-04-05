@@ -15,6 +15,8 @@ libraryDependencies ++= {
   Seq(
     "org.apache.hadoop" % "hadoop-common"                % hadoopVersion,
     "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion,
+    "org.apache.avro"   % "avro"                         % "1.8.2",
+    "org.apache.avro"   % "avro-mapred"                  % "1.8.2",
     "org.scalatest"     %% "scalatest"                   % "3.0.0"        % Test,
     "org.mockito"       % "mockito-core"                 % "2.8.47"       % Test
   )
