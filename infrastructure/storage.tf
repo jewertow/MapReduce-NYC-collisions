@@ -5,6 +5,13 @@ resource "google_storage_bucket" "primary" {
   provider      = google
 }
 
+resource "google_storage_bucket_object" "airflow_dag" {
+  name = "dags/dag.py"
+  bucket = replace(replace(google_composer_environment.airflow.config[0].dag_gcs_prefix, "gs://", ""), "/dags", "")
+  source = "${var.project_location}/airflow/dag.py"
+  depends_on = [google_composer_environment.airflow]
+}
+
 resource "google_storage_bucket_object" "collisions_mapreduce_job_jar" {
   name   = "mapreduce/jar/collisions-mapreduce-job.jar"
   bucket = google_storage_bucket.primary.name

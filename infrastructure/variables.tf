@@ -7,7 +7,7 @@ variable "gcp_project_id" {
 }
 
 variable "region" {
-  default = "europe-west4"
+  default = "europe-west3"
 }
 
 variable "zone" {
