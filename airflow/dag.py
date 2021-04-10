@@ -5,18 +5,28 @@ from airflow import models
 from airflow.contrib.operators import dataproc_operator
 from airflow.utils import trigger_rule
 
+# cluster data
 project_id = models.Variable.get('gcp_project')
 gcs_bucket = models.Variable.get('gcs_bucket')
 gce_zone = models.Variable.get('gce_zone')
 machine_type = models.Variable.get('machine_type')
-mapreduce_jar = models.Variable.get('mapreduce_jar')
+
+# job URIs
+hadoop_job_jar_uri = models.Variable.get('hadoop_job_jar_uri')
+hive_job_hql_uri = models.Variable.get('hive_job_hql_uri')
+
+# job output buckets
+hadoop_job_output_bucket = models.Variable.get('hadoop_job_output_bucket')
+hive_job_output_bucket = models.Variable.get('hive_job_output_bucket')
+
+# datasets
+collisions_dataset_uri = models.Variable.get('collisions_dataset_uri')
+zips_boroughs_bucket_uri = models.Variable.get('zips_boroughs_bucket_uri')
+
+# dependencies
+hive_hcatalog_jar_uri = models.Variable.get('hive_hcatalog_jar_uri')
 
 exec_dt = datetime.datetime.now().strftime('%Y%m%d')
-mapreduce_hadoop_job_args = [
-    f'gs://{gcs_bucket}/mapreduce/input/collisions.csv',
-    f'gs://{gcs_bucket}/mapreduce/output/{exec_dt}'
-]
-
 yesterday = datetime.datetime.combine(
     datetime.datetime.today() - datetime.timedelta(1),
     datetime.datetime.min.time())
@@ -45,22 +55,25 @@ with models.DAG(
         master_machine_type=machine_type,
         worker_machine_type=machine_type)
 
-    run_dataproc_hadoop_job = dataproc_operator.DataProcHadoopOperator(
-        task_id='run_dataproc_hadoop_job',
+    hadoop_job = dataproc_operator.DataProcHadoopOperator(
+        task_id='hadoop_job',
         cluster_name=mapreduce_cluster_name,
-        main_jar=mapreduce_jar,
-        arguments=mapreduce_hadoop_job_args)
+        main_jar=hadoop_job_jar_uri,
+        arguments=[
+            collisions_dataset_uri,
+            f'{hadoop_job_output_bucket}/{exec_dt}'
+        ])
 
-    run_dataproc_hive_job = dataproc_operator.DataProcHiveOperator(
-        task_id='run_dataproc_hive_job',
+    hive_job = dataproc_operator.DataProcHiveOperator(
+        task_id='hive_job',
         cluster_name=mapreduce_cluster_name,
-        dataproc_hive_jars=[f"gs://{gcs_bucket}/hive/libs/hive-hcatalog-2.3.0.jar"],
-        query_uri=f"gs://{gcs_bucket}/hive/job/job.hql",
+        dataproc_hive_jars=[hive_hcatalog_jar_uri],
+        query_uri=hive_job_hql_uri,
         variables={
-            'collisions_job_output_bucket': f'gs://{gcs_bucket}/mapreduce/output/{exec_dt}',
-            'zips_boroughs_bucket':         f'gs://{gcs_bucket}/mapreduce/hive/tables/zips-boroughs',
-            'hive_job_output_bucket':       f'gs://{gcs_bucket}/mapreduce/hive/output/{exec_dt}',
-            'hive_hcatalog_jar':            f'gs://{gcs_bucket}/hive/libs/hive-hcatalog-2.3.0.jar'
+            'collisions_job_output_bucket': f'{hadoop_job_output_bucket}/{exec_dt}',
+            'hive_job_output_bucket':       f'{hive_job_output_bucket}/{exec_dt}',
+            'hive_hcatalog_jar':            hive_hcatalog_jar_uri,
+            'zips_boroughs_bucket':         zips_boroughs_bucket_uri
         }
     )
 
@@ -69,4 +82,4 @@ with models.DAG(
         cluster_name=mapreduce_cluster_name,
         trigger_rule=trigger_rule.TriggerRule.ALL_DONE)
 
-    create_dataproc_cluster >> run_dataproc_hadoop_job >> run_dataproc_hive_job >> delete_dataproc_cluster
+    create_dataproc_cluster >> hadoop_job >> hive_job >> delete_dataproc_cluster
