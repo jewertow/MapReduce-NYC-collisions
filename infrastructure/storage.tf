@@ -50,7 +50,7 @@ resource "google_storage_bucket_object" "hive_job_output_dir" {
 resource "google_storage_bucket_object" "hive_hcatalog_jar" {
   name   = "mapreduce/hive/dependencies/hive-hcatalog-2.3.0.jar"
   bucket = google_storage_bucket.primary.name
-  source = "${var.project_location}/libs/hive-hcatalog-core-2.3.0.jar"
+  source = "${var.project_location}/hive/hive-hcatalog-core-2.3.0.jar"
 }
 
 resource "google_storage_bucket_object" "airflow_dag" {
