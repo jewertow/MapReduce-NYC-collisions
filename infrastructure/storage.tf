@@ -36,6 +36,12 @@ resource "google_storage_bucket_object" "zips_boroughs_dataset" {
   source = "${var.project_location}/input/zips-boroughs/${var.zips_boroughs_dataset_file}"
 }
 
+resource "google_storage_bucket_object" "hive_job" {
+  name = "hive/job/job.hql"
+  bucket = google_storage_bucket.primary.name
+  source = "${var.project_location}/hive/job.sql"
+}
+
 resource "google_storage_bucket_object" "hive_hcatalog_jar" {
   name   = "hive/libs/hive-hcatalog-2.3.0.jar"
   bucket = google_storage_bucket.primary.name

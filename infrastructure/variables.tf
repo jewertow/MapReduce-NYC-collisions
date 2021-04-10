@@ -14,10 +14,6 @@ variable "zone" {
   default = "a"
 }
 
-variable "execution_date_time" {
-  description = "env variable that stores UNIX timestamp"
-}
-
 variable "dataproc_mapreduce_cluster_name" {
   default = "mapreduce-cluster"
 }

@@ -11,10 +11,10 @@ gce_zone = models.Variable.get('gce_zone')
 machine_type = models.Variable.get('machine_type')
 mapreduce_jar = models.Variable.get('mapreduce_jar')
 
-exec_dt = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+exec_dt = datetime.datetime.now().strftime('%Y%m%d')
 mapreduce_hadoop_job_args = [
     f'gs://{gcs_bucket}/mapreduce/input/collisions.csv',
-    f'gs://{gcs_bucket}/mapreduce/output/{exec_dt}/'
+    f'gs://{gcs_bucket}/mapreduce/output/{exec_dt}'
 ]
 
 yesterday = datetime.datetime.combine(
@@ -47,13 +47,26 @@ with models.DAG(
 
     run_dataproc_hadoop_job = dataproc_operator.DataProcHadoopOperator(
         task_id='run_dataproc_hadoop_job',
-        main_jar=mapreduce_jar,
         cluster_name=mapreduce_cluster_name,
+        main_jar=mapreduce_jar,
         arguments=mapreduce_hadoop_job_args)
+
+    run_dataproc_hive_job = dataproc_operator.DataProcHiveOperator(
+        task_id='run_dataproc_hive_job',
+        cluster_name=mapreduce_cluster_name,
+        dataproc_hive_jars=[f"gs://{gcs_bucket}/hive/libs/hive-hcatalog-2.3.0.jar"],
+        query_uri=f"gs://{gcs_bucket}/hive/job/job.hql",
+        variables={
+            'collisions_job_output_bucket': f'gs://{gcs_bucket}/mapreduce/output/{exec_dt}',
+            'zips_boroughs_bucket':         f'gs://{gcs_bucket}/mapreduce/hive/tables/zips-boroughs',
+            'hive_job_output_bucket':       f'gs://{gcs_bucket}/mapreduce/hive/output/{exec_dt}',
+            'hive_hcatalog_jar':            f'gs://{gcs_bucket}/hive/libs/hive-hcatalog-2.3.0.jar'
+        }
+    )
 
     delete_dataproc_cluster = dataproc_operator.DataprocClusterDeleteOperator(
         task_id='delete_dataproc_cluster',
         cluster_name=mapreduce_cluster_name,
         trigger_rule=trigger_rule.TriggerRule.ALL_DONE)
 
-    create_dataproc_cluster >> run_dataproc_hadoop_job >> delete_dataproc_cluster
+    create_dataproc_cluster >> run_dataproc_hadoop_job >> run_dataproc_hive_job >> delete_dataproc_cluster
