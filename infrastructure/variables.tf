@@ -7,15 +7,11 @@ variable "gcp_project_id" {
 }
 
 variable "region" {
-  default = "europe-west4"
+  default = "europe-west3"
 }
 
 variable "zone" {
   default = "a"
-}
-
-variable "execution_date_time" {
-  description = "env variable that stores UNIX timestamp"
 }
 
 variable "dataproc_mapreduce_cluster_name" {
