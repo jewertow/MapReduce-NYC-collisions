@@ -33,7 +33,7 @@ in the Manhattan area with the maximum sum of injured and killed people for each
 
 The output file must be in JSON format.
 
-## Result
+## Expected result
 
 ```json
 {"street":"1 AVENUE","person_type":"cyclist","killed":1,"injured":194}
@@ -45,7 +45,6 @@ The output file must be in JSON format.
 {"street":"BROADWAY","person_type":"cyclist","killed":0,"injured":239}
 {"street":"BROADWAY","person_type":"motorist","killed":0,"injured":769}
 {"street":"BROADWAY","person_type":"pedestrian","killed":6,"injured":463}
-
 ```
 
 ## Airflow DAG (Directed Acyclic Graph)
