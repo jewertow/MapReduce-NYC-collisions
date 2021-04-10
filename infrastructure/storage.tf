@@ -8,7 +8,7 @@ resource "google_storage_bucket" "primary" {
 resource "google_storage_bucket_object" "collisions_dataset" {
   name   = "mapreduce/datasets/nyc-collisions/collisions.csv"
   bucket = google_storage_bucket.primary.name
-  source = "${var.project_location}/input/collisions/${var.collisions_dataset_file}"
+  source = "${var.project_location}/input/collisions/NYPD_Motor_Vehicle_Collisions.csv"
 }
 
 resource "google_storage_bucket_object" "zips_boroughs_dataset_dir" {
@@ -20,7 +20,7 @@ resource "google_storage_bucket_object" "zips_boroughs_dataset_dir" {
 resource "google_storage_bucket_object" "zips_boroughs_dataset" {
   name   = "${google_storage_bucket_object.zips_boroughs_dataset_dir.name}zips-boroughs.csv"
   bucket = google_storage_bucket.primary.name
-  source = "${var.project_location}/input/zips-boroughs/${var.zips_boroughs_dataset_file}"
+  source = "${var.project_location}/input/zips-boroughs/zips-boroughs.csv"
 }
 
 resource "google_storage_bucket_object" "collisions_mapreduce_job_jar" {
