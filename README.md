@@ -1,6 +1,6 @@
 # About the project
 
-It is an academic project created to complete course "Processing big data".
+It is an academic project created to complete the course "Big data processing".
 
 The main goal of this project was to implement MapReduce processing with Apache Hadoop and Apache Hive.
 
